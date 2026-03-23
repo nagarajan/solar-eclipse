@@ -2,11 +2,12 @@ import * as THREE from "three";
 import { EARTH_RADIUS_KM } from "./ephemeris";
 
 const PATH_R = EARTH_RADIUS_KM * 1.003;
+const withBase = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 let pathIndex: Record<string, number[][]> | null = null;
 
 export async function loadUmbraPaths(): Promise<void> {
-  const resp = await fetch("/umbra_paths.json");
+  const resp = await fetch(withBase("umbra_paths.json"));
   pathIndex = await resp.json();
 }
 

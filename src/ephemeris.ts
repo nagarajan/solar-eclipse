@@ -45,3 +45,36 @@ export function getBodyPositions(time: AstroTime): BodyPositions {
 export function offsetMinutes(base: AstroTime, minutes: number): AstroTime {
   return MakeTime(new Date(base.date.getTime() + minutes * 60_000));
 }
+
+export function getUmbraSurfacePoint(time: AstroTime): THREE.Vector3 | null {
+  const { sunFromEarth, moonFromEarth } = getBodyPositions(time);
+  const rayDir = moonFromEarth.clone().sub(sunFromEarth).normalize();
+  const halfB = moonFromEarth.dot(rayDir);
+  const c = moonFromEarth.dot(moonFromEarth) - EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+  const disc = halfB * halfB - c;
+  if (disc < 0) return null;
+
+  const distance = -halfB - Math.sqrt(disc);
+  if (distance < 0) return null;
+
+  return moonFromEarth.add(rayDir.multiplyScalar(distance));
+}
+
+export function latLonToEarthFixedPoint(
+  latitudeDeg: number,
+  longitudeDeg: number,
+  radiusKm = EARTH_RADIUS_KM
+): THREE.Vector3 {
+  const latRad = THREE.MathUtils.degToRad(latitudeDeg);
+  const lonRad = THREE.MathUtils.degToRad(longitudeDeg);
+  const cosLat = Math.cos(latRad);
+  return new THREE.Vector3(
+    radiusKm * cosLat * Math.cos(lonRad),
+    radiusKm * Math.sin(latRad),
+    -radiusKm * cosLat * Math.sin(lonRad)
+  );
+}
+
+export function earthFixedToInertial(point: THREE.Vector3, gmstDeg: number): THREE.Vector3 {
+  return point.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(gmstDeg));
+}

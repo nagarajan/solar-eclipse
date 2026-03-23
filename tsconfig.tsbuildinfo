@@ -1,1 +1,1 @@
-{"root":["./src/earthglobe.ts","./src/solarsystemscene.ts","./src/countrycatalog.ts","./src/eclipsecatalog.ts","./src/ephemeris.ts","./src/main.ts","./src/stars.ts","./src/umbrapaths.ts"],"errors":true,"version":"5.7.3"}
+{"root":["./src/earthglobe.ts","./src/solarsystemscene.ts","./src/countrycatalog.ts","./src/eclipsecatalog.ts","./src/ephemeris.ts","./src/main.ts","./src/stars.ts","./src/umbrapaths.ts","./src/vite-env.d.ts"],"version":"5.7.3"}

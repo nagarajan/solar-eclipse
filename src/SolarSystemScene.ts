@@ -6,6 +6,9 @@ import {
   SUN_RADIUS_KM,
   MOON_RADIUS_KM,
   EARTH_RADIUS_KM,
+  getUmbraSurfacePoint,
+  latLonToEarthFixedPoint,
+  earthFixedToInertial,
 } from "./ephemeris";
 import { getUmbraPath } from "./umbraPaths";
 import { EarthGlobe } from "./EarthGlobe";
@@ -14,6 +17,7 @@ import type { EclipseEntry } from "./eclipseCatalog";
 import type { AstroTime } from "astronomy-engine";
 
 export type PivotTarget = "earth" | "moon";
+const withBase = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 export class SolarSystemScene {
   private renderer: THREE.WebGLRenderer;
@@ -59,12 +63,12 @@ export class SolarSystemScene {
     this.earthGroup = new THREE.Group();
     this.inertialGroup.add(this.earthGroup);
 
-    this.earthGlobe = new EarthGlobe("/earth_political.png");
+    this.earthGlobe = new EarthGlobe(withBase("earth_political.png"));
     this.earthGroup.add(this.earthGlobe.mesh);
 
     // Moon
     const moonGeo = new THREE.SphereGeometry(MOON_RADIUS_KM, 64, 32);
-    const moonTex = new THREE.TextureLoader().load("/moon_map.jpg");
+    const moonTex = new THREE.TextureLoader().load(withBase("moon_map.jpg"));
     moonTex.colorSpace = THREE.SRGBColorSpace;
     const moonMat = new THREE.MeshPhongMaterial({ map: moonTex });
     this.moonMesh = new THREE.Mesh(moonGeo, moonMat);
@@ -85,7 +89,7 @@ export class SolarSystemScene {
     this.sunMesh.add(sunLight);
 
     // Stars
-    buildStarField("/stars.json").then((sf) => {
+    buildStarField(withBase("stars.json")).then((sf) => {
       this.starField = sf;
       this.inertialGroup.add(sf.group);
     });
@@ -115,15 +119,12 @@ export class SolarSystemScene {
     this.setTimeOffset(0);
     this.updateUmbraPath(entry);
 
-    // Position camera nicely: from above the eclipse sub-solar point
-    const bp = getBodyPositions(entry.peak);
-    const moonDir = bp.moonFromEarth.clone().normalize();
-    const camPos = moonDir
-      .clone()
-      .multiplyScalar(EARTH_RADIUS_KM * 4)
-      .add(new THREE.Vector3(0, EARTH_RADIUS_KM * 1.5, 0));
+    const focusPoint = this.getSelectionFocusPoint(entry);
+    const viewDir = focusPoint.clone().normalize();
+    const upBias = new THREE.Vector3(0, 1, 0).multiplyScalar(EARTH_RADIUS_KM * 0.35);
+    const camPos = focusPoint.clone().add(viewDir.multiplyScalar(EARTH_RADIUS_KM * 2.4)).add(upBias);
     this.camera.position.copy(camPos);
-    this.controls.target.set(0, 0, 0);
+    this.controls.target.copy(focusPoint);
     this.controls.update();
   }
 
@@ -195,4 +196,21 @@ export class SolarSystemScene {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
+
+  private getSelectionFocusPoint(entry: EclipseEntry): THREE.Vector3 {
+    const umbraPoint = getUmbraSurfacePoint(entry.peak);
+    if (umbraPoint) {
+      return umbraPoint;
+    }
+
+    if (entry.latitude !== undefined && entry.longitude !== undefined) {
+      const bp = getBodyPositions(entry.peak);
+      return earthFixedToInertial(
+        latLonToEarthFixedPoint(entry.latitude, entry.longitude),
+        bp.gmstDeg
+      );
+    }
+
+    return new THREE.Vector3(0, 0, EARTH_RADIUS_KM);
+  }
 }

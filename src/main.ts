@@ -3,6 +3,7 @@ import { buildEclipseCatalog, type EclipseEntry } from "./eclipseCatalog";
 import { SolarSystemScene } from "./SolarSystemScene";
 import { loadCountryIndex } from "./countryCatalog";
 import { loadUmbraPaths } from "./umbraPaths";
+const withBase = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 const listEl = document.getElementById("eclipse-list")!;
 const searchInput = document.getElementById("search-input") as HTMLInputElement;
@@ -128,13 +129,13 @@ pivotMoonBtn.addEventListener("click", () => {
 texPoliticalBtn.addEventListener("click", () => {
   texPoliticalBtn.classList.add("active");
   texRealisticBtn.classList.remove("active");
-  scene.setEarthTexture("/earth_political.png");
+  scene.setEarthTexture(withBase("earth_political.png"));
 });
 
 texRealisticBtn.addEventListener("click", () => {
   texRealisticBtn.classList.add("active");
   texPoliticalBtn.classList.remove("active");
-  scene.setEarthTexture("/earth_realistic.jpg", 1.4, 1.2);
+  scene.setEarthTexture(withBase("earth_realistic.jpg"), 1.4, 1.2);
 });
 
 starParallaxCb.addEventListener("change", () => {

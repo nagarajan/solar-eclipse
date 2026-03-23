@@ -1,4 +1,5 @@
 import type { EclipseEntry } from "./eclipseCatalog";
+const withBase = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 /**
  * Loads the pre-built eclipse-to-countries mapping from
@@ -8,7 +9,7 @@ import type { EclipseEntry } from "./eclipseCatalog";
 export async function loadCountryIndex(
   catalog: EclipseEntry[]
 ): Promise<void> {
-  const resp = await fetch("/eclipse_countries.json");
+  const resp = await fetch(withBase("eclipse_countries.json"));
   const index: Record<string, string[]> = await resp.json();
 
   for (const entry of catalog) {

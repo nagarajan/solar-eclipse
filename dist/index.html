@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solar Eclipse Visualization</title>
+    <script type="module" crossorigin src="/apps/solar-eclipses/assets/index-BC1sA9N8.js"></script>
+    <link rel="stylesheet" crossorigin href="/apps/solar-eclipses/assets/index-6o2jNLBu.css">
+  </head>
+  <body>
+    <div id="sidebar">
+      <h1>Solar Eclipses</h1>
+      <div id="eclipse-filter">
+        <input type="text" id="search-input" placeholder="Search by date..." />
+        <input type="text" id="country-input" placeholder="Search by country..." />
+        <div id="filter-buttons">
+          <button class="filter-btn" data-kind="all">All</button>
+          <button class="filter-btn active" data-kind="total+annular">Total+Annular</button>
+          <button class="filter-btn" data-kind="Total">Total</button>
+          <button class="filter-btn" data-kind="Annular">Annular</button>
+          <button class="filter-btn" data-kind="Partial">Partial</button>
+        </div>
+      </div>
+      <div id="eclipse-list"></div>
+      <div id="controls">
+        <div id="eclipse-info"></div>
+        <div id="time-control">
+          <label for="time-slider">Time offset</label>
+          <input type="range" id="time-slider" min="-360" max="360" value="0" step="1" />
+          <span id="time-label">+0 min</span>
+        </div>
+        <div id="pivot-control">
+          <span>Orbit around:</span>
+          <button id="pivot-earth" class="pivot-btn active">Earth</button>
+          <button id="pivot-moon" class="pivot-btn">Moon</button>
+        </div>
+        <div id="texture-control">
+          <span>Earth style:</span>
+          <button id="tex-political" class="pivot-btn active">Political</button>
+          <button id="tex-realistic" class="pivot-btn">Realistic</button>
+        </div>
+        <div id="parallax-control">
+          <label>
+            <input type="checkbox" id="star-parallax" />
+            Star parallax layers
+          </label>
+        </div>
+      </div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </body>
+</html>
